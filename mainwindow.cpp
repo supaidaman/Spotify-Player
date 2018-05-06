@@ -7,12 +7,14 @@
 #include <QDesktopServices>
 
 
+//inserir comentários depois...
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
 
     ui->setupUi(this);
+    ui->tableWidget->setSelectionBehavior(QTableView::SelectRows);
     auto replyHandler = new QOAuthHttpServerReplyHandler(8080, NULL);
 
     spotify.setReplyHandler(replyHandler);
@@ -197,20 +199,16 @@ void MainWindow::on_searchButton_clicked()
             auto ID  = itemMap["id"];
             auto name = itemMap["name"]; // montar lista de playlists baseado nisto
             auto href = itemMap["href"];
+            auto previewUrl = itemMap["preview_url"];
 
             ui->tableWidget->insertRow ( ui->tableWidget->rowCount() );
             ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1,
                                      0,
                                      new QTableWidgetItem(name.toString()));
+
             ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1,
                                      1,
-                                     new QTableWidgetItem(ID.toString()));
-            ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1,
-                                     1,
-                                     new QTableWidgetItem(ID.toString()));
-            ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1,
-                                     2,
-                                     new QTableWidgetItem(href.toString()));
+                                     new QTableWidgetItem(previewUrl.toString()));
 
 
 
@@ -219,4 +217,55 @@ void MainWindow::on_searchButton_clicked()
 
         reply->deleteLater();
     });
+}
+
+void MainWindow::on_actionSalvar_triggered()
+{
+
+}
+
+void MainWindow::on_actionCarregar_triggered()
+{
+
+}
+
+
+
+void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+
+    auto itemRow = item->row();
+
+
+    int currentIndex = 0;
+    ui->tableWidget_2->insertRow ( ui->tableWidget_2->rowCount() );
+    for(int i =0; i< ui->tableWidget->columnCount();++i)
+    {
+        auto itemSelected = ui->tableWidget->item(itemRow,i);
+//        auto Text = itemSelected->text();
+//        auto testValue = itemSelected->data(0).toString();
+        ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
+                                   currentIndex,
+                                  new QTableWidgetItem(itemSelected->text()));
+       currentIndex++;
+       if(currentIndex>1)
+           currentIndex=0;
+        // delete(itemSelected);
+    }
+   //
+//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
+//                             0,
+//                             new QTableWidgetItem(item->data(QT.toString()));
+
+//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
+//                             1,
+//                             new QTableWidgetItem(item->values[1].toString()));
+//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
+//                             2,
+//                             new QTableWidgetItem(item->values[2].toString()));
+//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
+//                             3,
+//                             new QTableWidgetItem(item->values[3].toString()));
+
+
 }

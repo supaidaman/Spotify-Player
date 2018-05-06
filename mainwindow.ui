@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
-    <height>364</height>
+    <width>733</width>
+    <height>373</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -69,9 +69,9 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>80</y>
-      <width>451</width>
+      <width>341</width>
       <height>192</height>
      </rect>
     </property>
@@ -82,19 +82,14 @@
     </column>
     <column>
      <property name="text">
-      <string>ID</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>URL</string>
+      <string>Preview URL</string>
      </property>
     </column>
    </widget>
    <widget class="QPushButton" name="searchButton">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>140</x>
       <y>50</y>
       <width>171</width>
       <height>23</height>
@@ -107,11 +102,44 @@
    <widget class="QLineEdit" name="searchLine">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>50</y>
       <width>131</width>
       <height>20</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="tableWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>80</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Nome</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Preview URL</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>50</y>
+      <width>121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Playlist</string>
     </property>
    </widget>
   </widget>
@@ -120,10 +148,18 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>528</width>
+     <width>733</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuOp_es_de_Playlist">
+    <property name="title">
+     <string>Opções de Playlist</string>
+    </property>
+    <addaction name="actionSalvar"/>
+    <addaction name="actionCarregar"/>
+   </widget>
+   <addaction name="menuOp_es_de_Playlist"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -134,6 +170,16 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionSalvar">
+   <property name="text">
+    <string>Salvar</string>
+   </property>
+  </action>
+  <action name="actionCarregar">
+   <property name="text">
+    <string>Carregar</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

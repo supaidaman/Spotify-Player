@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QOAuth2AuthorizationCodeFlow>
-
+#include <QTableWidgetItem>
 namespace Ui {
 class MainWindow;
 }
@@ -30,6 +30,13 @@ private slots:
     void on_recoverUserPlaylist_clicked();
 
     void on_searchButton_clicked();
+
+    void on_actionSalvar_triggered();
+
+    void on_actionCarregar_triggered();
+
+
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;
