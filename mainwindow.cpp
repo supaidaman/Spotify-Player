@@ -5,8 +5,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDesktopServices>
-
-
+#include <QMediaPlaylist>
+#include <QMediaPlayer>
 //inserir comentários depois...
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     ui->tableWidget->setSelectionBehavior(QTableView::SelectRows);
+    ui->tableWidget_2->setSelectionBehavior(QTableView::SelectRows);
     auto replyHandler = new QOAuthHttpServerReplyHandler(8080, NULL);
 
     spotify.setReplyHandler(replyHandler);
@@ -28,11 +29,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&spotify, &QOAuth2AuthorizationCodeFlow::statusChanged,
             this, &MainWindow::authorizationStatusChanged);
-
-//    connect(&spotify, &QOAuth2AuthorizationCodeFlow::granted,
-//            this, &MainWindow::grantPermission);
-
-
 }
 
 MainWindow::~MainWindow()
@@ -50,7 +46,7 @@ void MainWindow::authorizationStatusChanged(QAbstractOAuth::Status status)
 {
     QString s;
     if (status == QAbstractOAuth::Status::Granted)
-        s = "granted";
+        s = "Permissão Concedida";
 
     if (status == QAbstractOAuth::Status::TemporaryCredentialsReceived) {
         s = "temp credentials";
@@ -108,7 +104,7 @@ void MainWindow::on_retrieveUserInfoButton_clicked()
             return;
         }
 
-        ui->label->setText("AEEEE");
+        ui->label->setText("Informações do Usuário Recuperadas");
         const auto data = reply->readAll();
 
         const auto document = QJsonDocument::fromJson(data);
@@ -124,7 +120,6 @@ void MainWindow::on_recoverUserPlaylist_clicked()
 {
     if (userName.length() == 0) return;
 
-//    ui->tableView->appendPlainText("Loading Playlists ...");
 
     QUrl u ("https://api.spotify.com/v1/users/" + userName + "/playlists");
 
@@ -229,8 +224,6 @@ void MainWindow::on_actionCarregar_triggered()
 
 }
 
-
-
 void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 {
 
@@ -242,30 +235,29 @@ void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
     for(int i =0; i< ui->tableWidget->columnCount();++i)
     {
         auto itemSelected = ui->tableWidget->item(itemRow,i);
-//        auto Text = itemSelected->text();
-//        auto testValue = itemSelected->data(0).toString();
         ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
                                    currentIndex,
                                   new QTableWidgetItem(itemSelected->text()));
        currentIndex++;
        if(currentIndex>1)
            currentIndex=0;
-        // delete(itemSelected);
-    }
-   //
-//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
-//                             0,
-//                             new QTableWidgetItem(item->data(QT.toString()));
 
-//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
-//                             1,
-//                             new QTableWidgetItem(item->values[1].toString()));
-//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
-//                             2,
-//                             new QTableWidgetItem(item->values[2].toString()));
-//    ui->tableWidget_2->setItem   ( ui->tableWidget->rowCount()-1,
-//                             3,
-//                             new QTableWidgetItem(item->values[3].toString()));
+    }
+
+}
+
+void MainWindow::on_playButton_clicked()
+{
+//criar outros botões// colocar campo na playlist com nome do artista.
+      QMediaPlaylist *playlist = new QMediaPlaylist();
+      for(int i =0; i< ui->tableWidget_2->rowCount();++i)
+      {
+          auto itemSelected = ui->tableWidget->item(i,1);
+             playlist->addMedia(QUrl(itemSelected->text()));
+      }
+      QMediaPlayer *musicPlayer = new QMediaPlayer();
+      musicPlayer->setPlaylist(playlist);
+      musicPlayer->play();
 
 
 }

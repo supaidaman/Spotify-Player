@@ -38,6 +38,8 @@ private slots:
 
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
+    void on_playButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QOAuth2AuthorizationCodeFlow spotify;
