@@ -199,7 +199,7 @@ void MainWindow::on_actionSalvar_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
          tr("Salvar Playlist"), "",
-         tr("Arquivo de Texto (*.txt);;Todos Os Arquivos (*)"));
+         tr("Arquivo de Texto (*.txt);;Todos os Arquivos (*)"));
 
     if (fileName.isEmpty())
           return;
@@ -214,16 +214,47 @@ void MainWindow::on_actionSalvar_triggered()
           QTextStream out(&file);
           for(int i =0; i< ui->tableWidget_2->rowCount();++i)
           {
-              auto itemURL = ui->tableWidget->item(i,1);
-              auto itemName = ui->tableWidget->item(i,0);
-              out << QString(itemName->text() + " - " + itemURL->text()) << "\r\n"; //windows line terminator
+              auto itemURL = ui->tableWidget_2->item(i,1);
+              auto itemName = ui->tableWidget_2->item(i,0);
+              out << QString(itemName->text() + ";" + itemURL->text()) << "\r\n"; //windows line terminator
           }
       }
 }
 
 void MainWindow::on_actionCarregar_triggered()
 {
+    QString fileName = QFileDialog::getOpenFileName(this,
+           tr("Abrir Playlist"), "",
+           tr("Arquivo de Texto (*.txt);;Todos os Arquivos (*)"));
+    if (fileName.isEmpty())
+           return;
+       else {
 
+           QFile file(fileName);
+
+           if (!file.open(QIODevice::ReadOnly)) {
+               QMessageBox::information(this, tr("Não foi possível abrir o arquivo"),
+                   file.errorString());
+               return;
+           }
+
+           QTextStream in(&file);
+           ui->tableWidget_2->setRowCount(0);
+           while (!in.atEnd())
+              {
+                 QString line = in.readLine();
+                 QStringList lstLine = line.split(";");
+                 ui->tableWidget_2->insertRow ( ui->tableWidget_2->rowCount() );
+                 ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
+                                          0,
+                                          new QTableWidgetItem(lstLine[0]));
+                 ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
+                                          1,
+                                          new QTableWidgetItem(lstLine[1]));
+
+
+              }
+       }
 }
 
 void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
@@ -255,7 +286,7 @@ void MainWindow::on_playButton_clicked()
       QMediaPlaylist *playlist = new QMediaPlaylist();
       for(int i =0; i< ui->tableWidget_2->rowCount();++i)
       {
-          auto itemSelected = ui->tableWidget->item(i,1);
+          auto itemSelected = ui->tableWidget_2->item(i,1);
              playlist->addMedia(QUrl(itemSelected->text()));
       }
       QMediaPlayer *musicPlayer = new QMediaPlayer();
