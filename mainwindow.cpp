@@ -7,12 +7,16 @@
 #include <QDesktopServices>
 #include <QMediaPlaylist>
 #include <QMediaPlayer>
-//inserir comentários depois...
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
+//Cria tela e faz setup das chaves to spotify. Seta seleção das grids para linhas
     ui->setupUi(this);
     ui->tableWidget->setSelectionBehavior(QTableView::SelectRows);
     ui->tableWidget_2->setSelectionBehavior(QTableView::SelectRows);
@@ -37,17 +41,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::grantPermission()
-{
-     spotify.grant();
-}
 
+
+//Método que recebe resposta do spotify.
 void MainWindow::authorizationStatusChanged(QAbstractOAuth::Status status)
 {
     QString s;
-    if (status == QAbstractOAuth::Status::Granted)
+    if (status == QAbstractOAuth::Status::Granted){
         s = "Permissão Concedida";
-
+        ui->searchButton->setEnabled(true);
+    }
     if (status == QAbstractOAuth::Status::TemporaryCredentialsReceived) {
         s = "temp credentials";
         //oauth2.refreshAccessToken();
@@ -57,41 +60,14 @@ void MainWindow::authorizationStatusChanged(QAbstractOAuth::Status status)
 
 }
 
-void MainWindow::grantedPermission()
-{
-
-}
-
-
-void MainWindow::getUserData()
-{
-    QUrl u ("https://api.spotify.com/v1/me");
-
-    auto reply = spotify.get(u);
-
-    connect(reply, &QNetworkReply::finished, [=]() {
-        if (reply->error() != QNetworkReply::NoError) {
-         qWarning () << "Erro Encontrado";
-            return;
-        }
-        const auto data = reply->readAll();
-
-
-        const auto document = QJsonDocument::fromJson(data);
-        const auto root = document.object();
-        userName = root.value("id").toString();
-
-
-
-        reply->deleteLater();
-    });
-}
-
+//Dar Permissão
 void MainWindow::on_permissionButton_clicked()
 {
      spotify.grant();
 }
 
+
+//Pega nome do Usuário. Usado como teste. Botão desabilitado
 void MainWindow::on_retrieveUserInfoButton_clicked()
 {
     QUrl u ("https://api.spotify.com/v1/me");
@@ -116,6 +92,7 @@ void MainWindow::on_retrieveUserInfoButton_clicked()
     });
 }
 
+//Recupera Playlist do usuário. Usado como teste.
 void MainWindow::on_recoverUserPlaylist_clicked()
 {
     if (userName.length() == 0) return;
@@ -165,10 +142,13 @@ void MainWindow::on_recoverUserPlaylist_clicked()
     });
 }
 
+//Procura Música pelo nome digitado. Procura somente "tracks"(músicas)
 
+//Adiciona músicas encontradas na lista (tableWidget).
 
 void MainWindow::on_searchButton_clicked()
 {
+    ui->tableWidget->setRowCount(0);
     QUrl u ("https://api.spotify.com/v1/search?q="+ui->searchLine->text() +"&type=track");
     auto reply = spotify.get(u);
 
@@ -214,9 +194,31 @@ void MainWindow::on_searchButton_clicked()
     });
 }
 
+//Métodos para salvar/carregar playlist
 void MainWindow::on_actionSalvar_triggered()
 {
+    QString fileName = QFileDialog::getSaveFileName(this,
+         tr("Salvar Playlist"), "",
+         tr("Arquivo de Texto (*.txt);;Todos Os Arquivos (*)"));
 
+    if (fileName.isEmpty())
+          return;
+      else {
+          QFile file(fileName);
+          if (!file.open(QIODevice::WriteOnly)) {
+              QMessageBox::information(this, tr("Não é possível abrir o arquivo"),
+                  file.errorString());
+              return;
+          }
+
+          QTextStream out(&file);
+          for(int i =0; i< ui->tableWidget_2->rowCount();++i)
+          {
+              auto itemURL = ui->tableWidget->item(i,1);
+              auto itemName = ui->tableWidget->item(i,0);
+              out << QString(itemName->text() + " - " + itemURL->text()) << "\r\n"; //windows line terminator
+          }
+      }
 }
 
 void MainWindow::on_actionCarregar_triggered()
@@ -246,6 +248,7 @@ void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 
 }
 
+//tocando preview
 void MainWindow::on_playButton_clicked()
 {
 //criar outros botões// colocar campo na playlist com nome do artista.

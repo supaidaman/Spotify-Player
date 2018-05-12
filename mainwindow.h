@@ -17,10 +17,8 @@ public:
     ~MainWindow();
 
 public slots:
-    void grantPermission();
+
     void authorizationStatusChanged (QAbstractOAuth::Status status);
-    void grantedPermission();
-    void getUserData();
 
 private slots:
     void on_permissionButton_clicked();

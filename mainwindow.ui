@@ -41,6 +41,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="retrieveUserInfoButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -51,19 +54,6 @@
     </property>
     <property name="text">
      <string>Pegar Informações do Usuário</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="recoverUserPlaylist">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>0</y>
-      <width>151</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Recuperar Playlist</string>
     </property>
    </widget>
    <widget class="QTableWidget" name="tableWidget">
@@ -87,6 +77,9 @@
     </column>
    </widget>
    <widget class="QPushButton" name="searchButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>140</x>
