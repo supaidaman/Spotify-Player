@@ -53,6 +53,8 @@ private:
     QString userName;
     QMediaPlayer *musicPlayer;
     QMediaPlaylist *playlist;
+    QString clientIdentifer = "59aea641a6cd4e179935ccc0a27757ed";
+    QString clientIdentifierSharedKey = "05384087670b46dd840b7c49ee5e1d2c";
 
 };
 

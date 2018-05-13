@@ -41,8 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
     spotify.setReplyHandler(replyHandler);
     spotify.setAuthorizationUrl(QUrl("https://accounts.spotify.com/authorize"));
     spotify.setAccessTokenUrl(QUrl("https://accounts.spotify.com/api/token"));
-    spotify.setClientIdentifier("59aea641a6cd4e179935ccc0a27757ed");
-    spotify.setClientIdentifierSharedKey("05384087670b46dd840b7c49ee5e1d2c");
+    spotify.setClientIdentifier(clientIdentifer);
+    spotify.setClientIdentifierSharedKey(clientIdentifierSharedKey);
 
 
     //Este escopo comentado é caso queira ler playlists ou usar outras coisas. Foi usado como teste.
@@ -296,7 +296,7 @@ void MainWindow::on_actionCarregar_triggered()
                                           0,
                                           nameItem);
 
-                 QTableWidgetItem *previewItem = new QTableWidgetItem(lineList[1]);
+                 QTableWidgetItem *previewItem = new QTableWidgetItem(lineList[1]   );
                  previewItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
                  ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
                                           1,
