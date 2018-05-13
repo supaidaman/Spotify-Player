@@ -393,7 +393,7 @@ void MainWindow::on_removeButton_clicked()
 
     auto item = ui->tableWidget_2->selectedItems();
 
-    //Remove por linha; Divide por dois por selected pega por célula. Caso tente remover um que não está lá, quebra.
+    //Remove por linha; Divide por dois pois o método selectedItems pega por célula. Caso tente remover um que não está lá, quebra.
     for(int i =0;i<= item.count()/2;i+=2)
     {
         ui->tableWidget_2->removeRow(item[i]->row());
