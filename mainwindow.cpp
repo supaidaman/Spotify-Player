@@ -5,8 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDesktopServices>
-#include <QMediaPlaylist>
-#include <QMediaPlayer>
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFile>
@@ -21,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setSelectionBehavior(QTableView::SelectRows);
     ui->tableWidget_2->setSelectionBehavior(QTableView::SelectRows);
     auto replyHandler = new QOAuthHttpServerReplyHandler(8080, NULL);
-
+    musicPlayer = new QMediaPlayer();
+     playlist = new QMediaPlaylist();
     spotify.setReplyHandler(replyHandler);
     spotify.setAuthorizationUrl(QUrl("https://accounts.spotify.com/authorize"));
     spotify.setAccessTokenUrl(QUrl("https://accounts.spotify.com/api/token"));
@@ -148,6 +148,12 @@ void MainWindow::on_recoverUserPlaylist_clicked()
 
 void MainWindow::on_searchButton_clicked()
 {
+    if(ui->searchLine->text()== NULL || ui->searchLine->text()=="")
+    {
+        QMessageBox::information(this, tr("A busca está vazia!"),
+        "Digite Algo Para Buscar");
+        return;
+    }
     ui->tableWidget->setRowCount(0);
     QUrl u ("https://api.spotify.com/v1/search?q="+ui->searchLine->text() +"&type=track");
     auto reply = spotify.get(u);
@@ -283,15 +289,64 @@ void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 void MainWindow::on_playButton_clicked()
 {
 //criar outros botões// colocar campo na playlist com nome do artista.
-      QMediaPlaylist *playlist = new QMediaPlaylist();
+    if(musicPlayer->state()!= QMediaPlayer::PausedState)
+    {
+      if(ui->tableWidget_2->rowCount()==0)
+      {
+        QMessageBox::information(this, tr("A playlist está vazia!"),
+        "Insira músicas na playlist para começar");
+        return;
+      }
+      playlist = new QMediaPlaylist();
       for(int i =0; i< ui->tableWidget_2->rowCount();++i)
       {
           auto itemSelected = ui->tableWidget_2->item(i,1);
              playlist->addMedia(QUrl(itemSelected->text()));
       }
-      QMediaPlayer *musicPlayer = new QMediaPlayer();
+
       musicPlayer->setPlaylist(playlist);
+    }
       musicPlayer->play();
 
 
+}
+
+void MainWindow::on_pauseButton_clicked()
+{
+    if(ui->tableWidget_2->rowCount()==0)
+    {
+      QMessageBox::information(this, tr("A playlist está vazia!"),
+      "Insira músicas na playlist para começar");
+      return;
+    }
+    musicPlayer->pause();
+}
+
+void MainWindow::on_stopButton_clicked()
+{
+    if(ui->tableWidget_2->rowCount()==0)
+    {
+      QMessageBox::information(this, tr("A playlist está vazia!"),
+      "Insira músicas na playlist para começar");
+      return;
+    }
+    musicPlayer->stop();
+}
+
+void MainWindow::on_removeButton_clicked()
+{
+    if(ui->tableWidget_2->rowCount()==0)
+    {
+      QMessageBox::information(this, tr("A playlist está vazia!"),
+      "Insira músicas na playlist para começar");
+      return;
+    }
+
+    auto item = ui->tableWidget_2->selectedItems();
+
+    //Remove por linha
+    for(int i =0;i<= item.count()/2;i+=2)
+    {
+        ui->tableWidget_2->removeRow(item[i]->row());
+    }
 }

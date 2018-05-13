@@ -126,19 +126,22 @@
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>50</y>
-      <width>121</width>
+      <y>20</y>
+      <width>251</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Playlist</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QPushButton" name="playButton">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>410</x>
       <y>50</y>
       <width>75</width>
       <height>23</height>
@@ -146,6 +149,45 @@
     </property>
     <property name="text">
      <string>Play</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pauseButton">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>50</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Pause</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stopButton">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>50</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stop</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="removeButton">
+    <property name="geometry">
+     <rect>
+      <x>460</x>
+      <y>280</y>
+      <width>151</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remover Selecionados</string>
     </property>
    </widget>
   </widget>

@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QOAuth2AuthorizationCodeFlow>
 #include <QTableWidgetItem>
+#include <QMediaPlaylist>
+#include <QMediaPlayer>
 namespace Ui {
 class MainWindow;
 }
@@ -38,11 +40,19 @@ private slots:
 
     void on_playButton_clicked();
 
+    void on_pauseButton_clicked();
+
+    void on_stopButton_clicked();
+
+    void on_removeButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QOAuth2AuthorizationCodeFlow spotify;
     bool isGranted;
     QString userName;
+    QMediaPlayer *musicPlayer;
+    QMediaPlaylist *playlist;
 
 };
 
