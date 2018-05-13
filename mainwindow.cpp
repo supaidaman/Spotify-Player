@@ -43,7 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     spotify.setAccessTokenUrl(QUrl("https://accounts.spotify.com/api/token"));
     spotify.setClientIdentifier("59aea641a6cd4e179935ccc0a27757ed");
     spotify.setClientIdentifierSharedKey("05384087670b46dd840b7c49ee5e1d2c");
-    spotify.setScope("user-read-private user-top-read playlist-read-private playlist-modify-public playlist-modify-private");
+
+
     //Este escopo comentado é caso queira ler playlists ou usar outras coisas. Foi usado como teste.
     //spotify.setScope("user-read-private user-top-read playlist-read-private playlist-modify-public playlist-modify-private");
 
