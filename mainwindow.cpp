@@ -20,14 +20,35 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setSelectionBehavior(QTableView::SelectRows);
     ui->tableWidget_2->setSelectionBehavior(QTableView::SelectRows);
     auto replyHandler = new QOAuthHttpServerReplyHandler(8080, NULL);
+
+    //icones nos botões
+    QPixmap pixmap(":/PlayerSymbols/Player/Play.png");
+    QIcon ButtonIcon(pixmap);
+    ui->playButton->setIcon(ButtonIcon);
+
+    pixmap = QPixmap(":/PlayerSymbols/Player/Pause.png");
+    ButtonIcon = QIcon(pixmap);
+    ui->pauseButton->setIcon(ButtonIcon);
+
+    pixmap = QPixmap(":/PlayerSymbols/Player/Stop.png");
+    ButtonIcon = QIcon(pixmap);
+    ui->stopButton->setIcon(ButtonIcon);
+
+//cria player e playlist
     musicPlayer = new QMediaPlayer();
-     playlist = new QMediaPlaylist();
+    playlist = new QMediaPlaylist();
+//setando urls do spotify. Quanto as urls, favor referir a wep api para pegar as suas caso queira.
     spotify.setReplyHandler(replyHandler);
     spotify.setAuthorizationUrl(QUrl("https://accounts.spotify.com/authorize"));
     spotify.setAccessTokenUrl(QUrl("https://accounts.spotify.com/api/token"));
     spotify.setClientIdentifier("59aea641a6cd4e179935ccc0a27757ed");
     spotify.setClientIdentifierSharedKey("05384087670b46dd840b7c49ee5e1d2c");
     spotify.setScope("user-read-private user-top-read playlist-read-private playlist-modify-public playlist-modify-private");
+    //Este escopo comentado é caso queira ler playlists ou usar outras coisas. Foi usado como teste.
+    //spotify.setScope("user-read-private user-top-read playlist-read-private playlist-modify-public playlist-modify-private");
+
+
+    //Par signal slot para conectar via browser e receber resposta do spotify
     connect(&spotify, &QOAuth2AuthorizationCodeFlow::authorizeWithBrowser,
              &QDesktopServices::openUrl);
 
@@ -52,7 +73,7 @@ void MainWindow::authorizationStatusChanged(QAbstractOAuth::Status status)
         ui->searchButton->setEnabled(true);
     }
     if (status == QAbstractOAuth::Status::TemporaryCredentialsReceived) {
-        s = "temp credentials";
+        s = "Crecendiciais Temporárias";
         //oauth2.refreshAccessToken();
     }
 
@@ -144,7 +165,7 @@ void MainWindow::on_recoverUserPlaylist_clicked()
 
 //Procura Música pelo nome digitado. Procura somente "tracks"(músicas)
 
-//Adiciona músicas encontradas na lista (tableWidget).
+//Adiciona músicas encontradas na lista (tableWidget) abaixo. Duplo clique em uma a leva para a playlist ao lado
 
 void MainWindow::on_searchButton_clicked()
 {
@@ -182,16 +203,17 @@ void MainWindow::on_searchButton_clicked()
             auto href = itemMap["href"];
             auto previewUrl = itemMap["preview_url"];
 
+            QTableWidgetItem *nameItem = new QTableWidgetItem(name.toString());
+            nameItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             ui->tableWidget->insertRow ( ui->tableWidget->rowCount() );
-            ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1,
-                                     0,
-                                     new QTableWidgetItem(name.toString()));
+            ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1, 0, nameItem);
 
+            QTableWidgetItem *previewItem = new QTableWidgetItem(previewUrl.toString());
+            previewItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
             ui->tableWidget->setItem   ( ui->tableWidget->rowCount()-1,
                                      1,
-                                     new QTableWidgetItem(previewUrl.toString()));
-
-
+                                     previewItem);
+       //     previewItem->setFlags(previewItem->flags() ^ Qt::ItemIsEditable);
 
         }
 
@@ -217,12 +239,25 @@ void MainWindow::on_actionSalvar_triggered()
               return;
           }
 
-          QTextStream out(&file);
-          for(int i =0; i< ui->tableWidget_2->rowCount();++i)
+          try{
+              if(ui->tableWidget_2->rowCount()==0)
+              {
+                  QMessageBox::information(this, tr("Playlist Vazia"),
+                      "Favor adicionar músicas a playlist");
+                  return;
+              }
+              QTextStream out(&file);
+              for(int i =0; i< ui->tableWidget_2->rowCount();++i)
+              {
+                  auto itemURL = ui->tableWidget_2->item(i,1);
+                  auto itemName = ui->tableWidget_2->item(i,0);
+                  out << QString(itemName->text() + ";" + itemURL->text()) << "\r\n"; //windows line terminator
+              }
+          }
+          catch(QException e)
           {
-              auto itemURL = ui->tableWidget_2->item(i,1);
-              auto itemName = ui->tableWidget_2->item(i,0);
-              out << QString(itemName->text() + ";" + itemURL->text()) << "\r\n"; //windows line terminator
+              QMessageBox::information(this, tr("Erro ao escrever o arquivo"),
+                 " Erro encontrado ao escrever o arquivo");
           }
       }
 }
@@ -246,20 +281,34 @@ void MainWindow::on_actionCarregar_triggered()
 
            QTextStream in(&file);
            ui->tableWidget_2->setRowCount(0);
+           try{
            while (!in.atEnd())
               {
                  QString line = in.readLine();
-                 QStringList lstLine = line.split(";");
+                 QStringList lineList = line.split(";");
+
+                 QTableWidgetItem *nameItem = new QTableWidgetItem(lineList[0]);
+                 nameItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+
                  ui->tableWidget_2->insertRow ( ui->tableWidget_2->rowCount() );
                  ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
                                           0,
-                                          new QTableWidgetItem(lstLine[0]));
+                                          nameItem);
+
+                 QTableWidgetItem *previewItem = new QTableWidgetItem(lineList[1]);
+                 previewItem->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
                  ui->tableWidget_2->setItem   ( ui->tableWidget_2->rowCount()-1,
                                           1,
-                                          new QTableWidgetItem(lstLine[1]));
+                                          previewItem);
 
 
               }
+           }
+           catch(QException e)
+           {
+               QMessageBox::information(this, tr("Erro ao ler o arquivo"),
+                  " Erro encontrado ao ler o arquivo");
+           }
        }
 }
 
@@ -285,10 +334,9 @@ void MainWindow::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 
 }
 
-//tocando preview
+//Botões de controle da playslist
 void MainWindow::on_playButton_clicked()
 {
-//criar outros botões// colocar campo na playlist com nome do artista.
     if(musicPlayer->state()!= QMediaPlayer::PausedState)
     {
       if(ui->tableWidget_2->rowCount()==0)
@@ -344,7 +392,7 @@ void MainWindow::on_removeButton_clicked()
 
     auto item = ui->tableWidget_2->selectedItems();
 
-    //Remove por linha
+    //Remove por linha; Divide por dois por selected pega por célula. Caso tente remover um que não está lá, quebra.
     for(int i =0;i<= item.count()/2;i+=2)
     {
         ui->tableWidget_2->removeRow(item[i]->row());
